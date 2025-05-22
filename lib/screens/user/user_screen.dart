@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:plant_app/constant.dart';
 import 'package:plant_app/screens/user/camera/simple_camera_page.dart';
 import 'package:plant_app/screens/user/camera/storage_helper.dart';
+import 'package:plant_app/screens/user/maps/map_page.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -16,6 +17,7 @@ class UserProfilePage extends StatefulWidget {
 class _UserProfilePageState extends State<UserProfilePage> {
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
+  String? _userAddress; 
 
   Future<void> _requestPermissions() async {
     await Permission.camera.request();
@@ -84,12 +86,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
           children: [
             Icon(Icons.check_circle, color: Colors.white),
             SizedBox(width: 12),
-            Text(message),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
           ],
         ),
         backgroundColor: kPrimaryColor,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.all(16),
       ),
     );
   }
@@ -99,14 +107,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.error, color: Colors.white),
+            Icon(Icons.error_outline, color: Colors.white),
             SizedBox(width: 12),
-            Text(message),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
           ],
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red[600],
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.all(16),
       ),
     );
   }
@@ -115,68 +129,221 @@ class _UserProfilePageState extends State<UserProfilePage> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
             ),
           ),
           child: SafeArea(
-            child: Wrap(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 50,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  Text(
+                    'Pilih Sumber Foto',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: kTextColor,
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Container(
-                        width: 50,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                      _buildImageSourceOption(
+                        icon: Icons.camera_alt,
+                        label: 'Kamera',
+                        onTap: () {
+                          Navigator.pop(context);
+                          _pickImageFromCamera();
+                        },
                       ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Pilih Sumber Foto',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: kTextColor,
-                        ),
+                      _buildImageSourceOption(
+                        icon: Icons.photo_library,
+                        label: 'Galeri',
+                        onTap: () {
+                          Navigator.pop(context);
+                          _pickImageFromGallery();
+                        },
                       ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildImageSourceOption(
-                            icon: Icons.camera_alt,
-                            label: 'Kamera',
-                            onTap: () {
-                              Navigator.pop(context);
-                              _pickImageFromCamera();
-                            },
-                          ),
-                          _buildImageSourceOption(
-                            icon: Icons.photo_library,
-                            label: 'Galeri',
-                            onTap: () {
-                              Navigator.pop(context);
-                              _pickImageFromGallery();
-                            },
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
                     ],
                   ),
-                ),
-              ],
+                  SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showAddressActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 50,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  Text(
+                    'Pilihan Alamat',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: kTextColor,
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  if (_userAddress == null) ...[
+                    _buildAddressOption(
+                      icon: Icons.add_location,
+                      label: 'Pilih Alamat',
+                      subtitle: 'Tambahkan alamat Anda',
+                      onTap: () async {
+                        Navigator.pop(context);
+                        final selectedAddress = await Navigator.push<String>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MapPage(),
+                          ),
+                        );
+                        if (selectedAddress != null) {
+                          setState(() {
+                            _userAddress = selectedAddress;
+                          });
+                          _showSuccessSnackBar('Alamat berhasil ditambahkan');
+                        }
+                      },
+                    ),
+                  ] else ...[
+                    _buildAddressOption(
+                      icon: Icons.edit_location,
+                      label: 'Update Alamat',
+                      subtitle: 'Ubah alamat yang tersimpan',
+                      onTap: () async {
+                        Navigator.pop(context);
+                        final selectedAddress = await Navigator.push<String>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MapPage(),
+                          ),
+                        );
+                        if (selectedAddress != null) {
+                          setState(() {
+                            _userAddress = selectedAddress;
+                          });
+                          _showSuccessSnackBar('Alamat berhasil diperbarui');
+                        }
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    _buildAddressOption(
+                      icon: Icons.delete_outline,
+                      label: 'Hapus Alamat',
+                      subtitle: 'Hapus alamat yang tersimpan',
+                      isDestructive: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showDeleteAddressConfirmation();
+                      },
+                    ),
+                  ],
+                  SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteAddressConfirmation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Hapus Alamat',
+            style: TextStyle(
+              color: kTextColor,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Text(
+            'Apakah Anda yakin ingin menghapus alamat yang tersimpan?',
+            style: TextStyle(color: kTextColor, fontSize: 14, height: 1.4),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Batal', style: TextStyle(color: Colors.grey[600])),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[600],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              onPressed: () {
+                setState(() {
+                  _userAddress = null;
+                });
+                Navigator.pop(context);
+                _showSuccessSnackBar('Alamat berhasil dihapus');
+              },
+              child: Text(
+                'Hapus',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -190,23 +357,101 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100,
-        padding: EdgeInsets.symmetric(vertical: 20),
+        width: 110,
+        padding: EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
           color: kPrimaryColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 30, color: kPrimaryColor),
-            SizedBox(height: 8),
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: kPrimaryColor.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 32, color: kPrimaryColor),
+            ),
+            SizedBox(height: 12),
             Text(
               label,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 color: kTextColor,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddressOption({
+    required IconData icon,
+    required String label,
+    required String subtitle,
+    required VoidCallback onTap,
+    bool isDestructive = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color:
+              isDestructive
+                  ? Colors.red.withOpacity(0.1)
+                  : kPrimaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color:
+                    isDestructive
+                        ? Colors.red.withOpacity(0.2)
+                        : kPrimaryColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                size: 24,
+                color: isDestructive ? Colors.red[600] : kPrimaryColor,
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: isDestructive ? Colors.red[600] : kTextColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDestructive ? Colors.red[400] : Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: isDestructive ? Colors.red[400] : Colors.grey[400],
             ),
           ],
         ),
@@ -219,7 +464,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
           'Profile',
@@ -240,16 +485,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 child: Stack(
                   children: [
                     Container(
-                      width: 120,
-                      height: 120,
+                      width: 130,
+                      height: 130,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: kPrimaryColor, width: 3),
+                        border: Border.all(color: kPrimaryColor, width: 4),
                         boxShadow: [
                           BoxShadow(
                             color: kPrimaryColor.withOpacity(0.3),
-                            blurRadius: 10,
-                            offset: Offset(0, 5),
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
                           ),
                         ],
                       ),
@@ -259,36 +504,43 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 ? Image.file(
                                   _profileImage!,
                                   fit: BoxFit.cover,
-                                  width: 120,
-                                  height: 120,
+                                  width: 130,
+                                  height: 130,
                                 )
                                 : Container(
-                                  color: Colors.grey[200],
+                                  color: kBackgroundColor,
                                   child: Icon(
                                     Icons.person,
-                                    size: 60,
+                                    size: 70,
                                     color: Colors.grey[400],
                                   ),
                                 ),
                       ),
                     ),
                     Positioned(
-                      bottom: 0,
-                      right: 0,
+                      bottom: 5,
+                      right: 5,
                       child: GestureDetector(
                         onTap: _showImageSourceActionSheet,
                         child: Container(
-                          width: 36,
-                          height: 36,
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
                             color: kPrimaryColor,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
+                            border: Border.all(color: Colors.white, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: kPrimaryColor.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
                           ),
                           child: Icon(
                             Icons.camera_alt,
                             color: Colors.white,
-                            size: 18,
+                            size: 20,
                           ),
                         ),
                       ),
@@ -297,7 +549,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ),
               ),
 
-              SizedBox(height: 30),
+              SizedBox(height: 32),
 
               _buildInfoCard(
                 title: 'Informasi Pribadi',
@@ -317,8 +569,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   _buildInfoItem(
                     icon: Icons.location_on_outlined,
                     label: 'Alamat',
-                    value: 'Jakarta, Indonesia',
-                    onTap: () {},
+                    value: _userAddress ?? 'Belum ada alamat',
+                    onTap: _showAddressActionSheet,
+                    hasValue: _userAddress != null,
                   ),
                 ],
               ),
@@ -335,17 +588,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
-            blurRadius: 10,
-            offset: Offset(0, 3),
+            blurRadius: 15,
+            offset: Offset(0, 5),
           ),
         ],
       ),
@@ -355,12 +608,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
           Text(
             title,
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
               color: kTextColor,
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 20),
           ...children,
         ],
       ),
@@ -372,24 +625,36 @@ class _UserProfilePageState extends State<UserProfilePage> {
     required String label,
     required String value,
     required VoidCallback onTap,
+    bool hasValue = true,
   }) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: kBackgroundColor.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: kPrimaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color:
+                      hasValue
+                          ? kPrimaryColor.withOpacity(0.15)
+                          : Colors.grey.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: kPrimaryColor, size: 20),
+                child: Icon(
+                  icon,
+                  color: hasValue ? kPrimaryColor : Colors.grey[500],
+                  size: 22,
+                ),
               ),
               SizedBox(width: 16),
               Expanded(
@@ -398,15 +663,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   children: [
                     Text(
                       label,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    SizedBox(height: 2),
+                    SizedBox(height: 4),
                     Text(
                       value,
                       style: TextStyle(
                         fontSize: 16,
-                        color: kTextColor,
-                        fontWeight: FontWeight.w500,
+                        color: hasValue ? kTextColor : Colors.grey[500],
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -417,23 +686,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: kPrimaryColor,
-          ),
-        ),
-        SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
-      ],
     );
   }
 }
