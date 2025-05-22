@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:plant_app/constant.dart';
 import 'package:plant_app/screens/home/components/header_with_searchbox.dart';
+import 'package:plant_app/screens/home/components/tittle_with_more_bbtn.dart';
 
 class Body extends StatelessWidget {
   const Body({super.key});
@@ -14,15 +14,9 @@ class Body extends StatelessWidget {
       child: Column(
         children: <Widget>[
           HeaderWithSearchBox(size: size),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-            child: Row(
-              children: [
-                TittleWithCustomUnderline(text: "Recommended"),
-                Spacer(),
-                
-              ],
-            ),
+          TittleWithMoreBtn(
+            title: "Recommended",
+            press: () {},
           ),
         ],
       ),
@@ -30,36 +24,3 @@ class Body extends StatelessWidget {
   }
 }
 
-class TittleWithCustomUnderline extends StatelessWidget {
-  const TittleWithCustomUnderline({super.key, this.text});
-
-  final String? text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 24,
-      child: Stack(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: kDefaultPadding / 4),
-            child: Text(
-              text ?? "",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            left: 0,
-            child: Container(
-              margin: EdgeInsets.only(right: kDefaultPadding / 4),
-              height: 7,
-              color: kPrimaryColor.withOpacity(0.2),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
