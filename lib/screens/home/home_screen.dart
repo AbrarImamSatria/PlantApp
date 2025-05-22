@@ -9,8 +9,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context),
-      body: SafeArea(child: Body()),
-      bottomNavigationBar: MyBottomNavBar(),
+      body: Body(),
+      bottomNavigationBar: SafeArea(child: MyBottomNavBar()),
     );
   }
 
