@@ -9,7 +9,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context),
-      body: Body(),
+      body: SafeArea(child: Body()),
       bottomNavigationBar: MyBottomNavBar(),
     );
   }
@@ -25,4 +25,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
