@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:plant_app/constant.dart';
+
+class FeaturedPlants extends StatelessWidget {
+  const FeaturedPlants({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          FeaturePlantCard(image: "assets/images/tanaman.jpg", press: () {}),
+          FeaturePlantCard(image: "assets/images/tanaman.jpg", press: () {}),
+        ],
+      ),
+    );
+  }
+}
+
+class FeaturePlantCard extends StatelessWidget {
+  const FeaturePlantCard({super.key, required this.image, required this.press});
+
+  final String image;
+  final Function press;
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return GestureDetector(
+      onTap: press as void Function()?,
+      child: Container(
+        margin: EdgeInsets.only(
+          left: kDefaultPadding,
+          top: kDefaultPadding / 2,
+          bottom: kDefaultPadding / 2,
+          right: kDefaultPadding,
+        ),
+        width: size.width * 0.7,
+        height: 185,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
+        ),
+      ),
+    );
+  }
+}
