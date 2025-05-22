@@ -2,22 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:plant_app/constant.dart';
 import 'package:plant_app/screens/details/components/icon_card.dart';
 
-class Body extends StatelessWidget {
-  const Body({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          ImageAndIcons(size: size),
-        ],
-      ),
-    );
-  }
-}
-
 class ImageAndIcons extends StatelessWidget {
   const ImageAndIcons({
     super.key,
@@ -94,4 +78,3 @@ class ImageAndIcons extends StatelessWidget {
     );
   }
 }
-
