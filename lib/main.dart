@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
         primaryColor: kPrimaryColor,
         textTheme: Theme.of(context).textTheme.apply(bodyColor: kTextColor),
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        
       ),
       home: HomeScreen(),
       debugShowCheckedModeBanner: false,
